@@ -372,7 +372,8 @@ export default function Catalogo() {
               {/* Image */}
               <div className="relative h-48 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 overflow-hidden">
                 <img
-                  src={`${API_URL}${p.imagen}`}
+                  src={`${API_URL}/uploads/${p.imagen}`}
+
                   alt={p.nombre}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   onError={(e) => {
