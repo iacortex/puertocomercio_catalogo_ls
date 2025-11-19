@@ -102,11 +102,10 @@ export default function Catalogo() {
         {[...Array(maxIntensidad)].map((_, i) => (
           <div
             key={i}
-            className={`h-1.5 w-6 rounded-full ${
-              i < intensidad
+            className={`h-1.5 w-6 rounded-full ${i < intensidad
                 ? "bg-gradient-to-r from-orange-400 to-red-500"
                 : "bg-slate-200 dark:bg-slate-700"
-            }`}
+              }`}
           />
         ))}
       </div>
@@ -202,11 +201,10 @@ export default function Catalogo() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setCategoriaFiltro(c.id)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
-                      categoriaFiltro === c.id
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-300 ${categoriaFiltro === c.id
                         ? "bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-lg shadow-sky-500/30"
                         : "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
-                    }`}
+                      }`}
                   >
                     <c.Icon size={16} />
                     <span className="text-sm">{c.label}</span>
@@ -303,11 +301,10 @@ export default function Catalogo() {
                         <button
                           key={c.id}
                           onClick={() => setCategoriaFiltro(c.id)}
-                          className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all ${
-                            categoriaFiltro === c.id
+                          className={`flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all ${categoriaFiltro === c.id
                               ? "bg-gradient-to-br from-sky-500 to-blue-600 text-white border-sky-600"
                               : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
-                          }`}
+                            }`}
                         >
                           <c.Icon size={24} />
                           <span className="text-sm font-medium">{c.label}</span>
@@ -373,7 +370,6 @@ export default function Catalogo() {
               <div className="relative h-48 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 overflow-hidden">
                 <img
                   src={`${API_URL}/uploads/${p.imagen}`}
-
                   alt={p.nombre}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   onError={(e) => {
@@ -503,7 +499,8 @@ export default function Catalogo() {
             >
               <div className="relative">
                 <img
-                  src={`${API_URL}${selectedProduct.imagen}`}
+
+                  src={`${API_URL}/uploads/${selectedProduct.imagen}`}
                   alt={selectedProduct.nombre}
                   className="w-full h-64 object-cover"
                   onError={(e) => {
@@ -532,7 +529,7 @@ export default function Catalogo() {
                     {selectedProduct.marca}
                   </span>
                 </div>
-                
+
                 {/* Intensidad en Modal */}
                 {selectedProduct.intensidad && (
                   <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl">
