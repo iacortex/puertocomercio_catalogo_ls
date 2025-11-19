@@ -1,20 +1,17 @@
-import { supabase } from "../supabase";
+export async function uploadImageToBackend(file, API_BASE) {
+  if (!file) return null;
 
-export const uploadImage = async (file) => {
-  const fileName = `${crypto.randomUUID()}-${file.name}`;
+  const formData = new FormData();
+  formData.append("file", file);
 
-  const { data, error } = await supabase.storage
-    .from("productos")   // tu bucket
-    .upload(fileName, file);
+  const res = await fetch(`${API_BASE}/upload-image`, {
+    method: "POST",
+    body: formData,
+  });
 
-  if (error) {
-    console.error("Error al subir imagen:", error);
-    throw error;
-  }
+  const data = await res.json();
+  if (!data.ok) throw new Error("Error subiendo imagen");
 
-  const { data: publicURL } = supabase.storage
-    .from("productos")
-    .getPublicUrl(fileName);
-
-  return publicURL.publicUrl;
-};
+  // retorna solo el nombre del archivo
+  return data.ruta;
+}

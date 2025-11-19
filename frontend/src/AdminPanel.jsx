@@ -1,9 +1,17 @@
-import React, { useEffect, useState } from "react";
+// src/AdminPanel.jsx
+import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Edit3, Trash, Sun, Moon, Save, X } from "lucide-react";
+import { resolveImageUrl } from "./lib/utils";
+import { uploadImageToBackend } from "./lib/uploadImage";
 
-const API = "http://localhost:3001/productos";
+// --- API BASE ---
+// --- API BASE ---
+const API_BASE = import.meta.env?.VITE_API_URL || "http://localhost:3001";
+const API = `${API_BASE.replace(/\/$/, "")}/productos`;
 
+
+// --- Constantes ---
 const categorias = ["TABACOS", "FILTROS", "PAPELILLOS", "ECONOMICOS", "CIGARRILLOS"];
 const marcas = ["BRISTOL", "ATLAS", "FOX", "MALBORO", "KENT", "LUCKY STRIKE", "PALL MALL"];
 
@@ -13,6 +21,7 @@ export default function AdminPanel() {
   const [editando, setEditando] = useState(null);
   const [dark, setDark] = useState(false);
 
+  // Formulario
   const [form, setForm] = useState({
     nombre: "",
     descripcion: "",
@@ -22,19 +31,40 @@ export default function AdminPanel() {
     precios: [{ cantidad: "unidad", precio: 1000 }],
   });
 
+  // Para manejar file input y preview antes de guardar
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState("");
+  const fileInputRef = useRef(null);
+
+  // -----------------------
+  // Cargar productos
+  // -----------------------
+  const cargarProductos = async () => {
+    try {
+      const res = await fetch(API);
+      const data = await res.json();
+      setProductos(data.productos || []);
+    } catch (err) {
+      console.error("Error cargando productos:", err);
+      setProductos([]);
+    }
+  };
+
   useEffect(() => {
-    fetch(API)
-      .then((r) => r.json())
-      .then((data) => setProductos(data.productos || []))
-      .catch(() => setProductos([]));
+    cargarProductos();
   }, []);
 
+  // -----------------------
+  // Dark Mode
+  // -----------------------
   useEffect(() => {
-    // Aplicar dark mode a todo el documento
-    document.documentElement.classList.toggle('dark', dark);
-    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    document.documentElement.classList.toggle("dark", dark);
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
   }, [dark]);
 
+  // -----------------------
+  // Helpers de formulario
+  // -----------------------
   const resetForm = () => {
     setForm({
       nombre: "",
@@ -45,40 +75,39 @@ export default function AdminPanel() {
       precios: [{ cantidad: "unidad", precio: 1000 }],
     });
     setEditando(null);
-  };
-
-  const guardar = async () => {
-    const payload = { ...form };
-    const url = editando ? `${API}/${editando}` : API;
-    const method = editando ? "PUT" : "POST";
-
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await res.json();
-    if (!data.ok) return alert("Error al guardar");
-
-    fetch(API)
-      .then((r) => r.json())
-      .then((d) => setProductos(d.productos || []));
-
-    resetForm();
-    setModal(false);
+    setSelectedFile(null);
+    setPreviewUrl("");
   };
 
   const editarProducto = (p) => {
     setEditando(p.id);
-    setForm(p);
+    // Si la imagen es relativa (p ej '/uploads/foo.png') la dejamos tal cual,
+    // resolveImageUrl la convertirá al mostrarla.
+    setForm({
+      nombre: p.nombre || "",
+      descripcion: p.descripcion || "",
+      imagen: p.imagen || "https://placehold.co/300x300",
+      categoria: p.categoria || categorias[0],
+      marca: p.marca || marcas[0],
+      precios: p.precios || [{ cantidad: "unidad", precio: 1000 }],
+      intensidad: p.intensidad,
+      maxIntensidad: p.maxIntensidad,
+      id: p.id,
+    });
+    setSelectedFile(null);
+    setPreviewUrl("");
     setModal(true);
   };
 
   const borrarProducto = async (id) => {
     if (!confirm("¿Eliminar este producto?")) return;
-    await fetch(`${API}/${id}`, { method: "DELETE" });
-    setProductos(productos.filter((p) => p.id !== id));
+    try {
+      await fetch(`${API}/${id}`, { method: "DELETE" });
+      setProductos((prev) => prev.filter((p) => p.id !== id));
+    } catch (err) {
+      console.error("Error eliminando:", err);
+      alert("Error al eliminar");
+    }
   };
 
   const removerPrecio = (index) => {
@@ -87,6 +116,66 @@ export default function AdminPanel() {
     setForm({ ...form, precios: nuevosPrecios });
   };
 
+  // -----------------------
+  // Manejo de archivos (upload)
+  // -----------------------
+  const handleFileSelect = (file) => {
+    if (!file) return;
+    setSelectedFile(file);
+    // preview local
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+  };
+
+  const onFileInputChange = (e) => {
+    const file = e.target.files?.[0];
+    handleFileSelect(file);
+  };
+
+  const openFilePicker = () => {
+    fileInputRef.current?.click();
+  };
+
+  // -----------------------
+  // Guardar (POST/PUT)
+  // -----------------------
+  const guardar = async () => {
+    try {
+      // Si hay un file seleccionado, subirlo primero
+      let imagenFinal = form.imagen;
+      if (selectedFile) {
+        // sube al backend y devuelve la URL pública o path
+        imagenFinal = await uploadImageToBackend(selectedFile);
+      }
+
+      const payload = { ...form, imagen: imagenFinal };
+      const url = editando ? `${API}/${editando}` : API;
+      const method = editando ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (!data.ok) {
+        console.error("Error guardando producto:", data);
+        return alert("Error al guardar");
+      }
+
+      await cargarProductos();
+      resetForm();
+      setModal(false);
+    } catch (err) {
+      console.error("Error en guardar:", err);
+      alert("Error al guardar producto");
+    }
+  };
+
+  // -----------------------
+  // Render
+  // -----------------------
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 transition-colors duration-300">
       {/* HEADER */}
@@ -166,7 +255,7 @@ export default function AdminPanel() {
                   >
                     <td className="px-6 py-4">
                       <img
-                        src={p.imagen}
+                        src={resolveImageUrl(p.imagen)}
                         alt={p.nombre}
                         className="w-16 h-16 object-cover rounded-lg shadow-sm"
                       />
@@ -334,15 +423,49 @@ export default function AdminPanel() {
 
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                    URL de la imagen
+                    URL de la imagen (o sube una)
                   </label>
-                  <input
-                    type="text"
-                    placeholder="https://ejemplo.com/imagen.jpg"
-                    value={form.imagen}
-                    onChange={(e) => setForm({ ...form, imagen: e.target.value })}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-900 dark:text-white transition-all"
-                  />
+
+                  <div className="flex gap-3 items-start">
+                    <input
+                      type="text"
+                      placeholder="https://ejemplo.com/imagen.jpg"
+                      value={form.imagen}
+                      onChange={(e) => setForm({ ...form, imagen: e.target.value })}
+                      className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 text-slate-900 dark:text-white transition-all"
+                    />
+
+                    <div className="flex flex-col items-end gap-2">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={onFileInputChange}
+                      />
+                      <button
+                        type="button"
+                        onClick={openFilePicker}
+                        className="px-4 py-2 bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300 rounded-lg font-medium hover:bg-sky-200 dark:hover:bg-sky-800 transition-colors"
+                      >
+                        Subir
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Preview */}
+                  <div className="mt-3 flex items-center gap-3">
+                    <div className="w-20 h-20 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+                      <img
+                        src={selectedFile ? previewUrl : resolveImageUrl(form.imagen)}
+                        alt="preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400">
+                      {selectedFile ? selectedFile.name : form.imagen}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Precios */}
