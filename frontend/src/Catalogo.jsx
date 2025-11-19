@@ -16,7 +16,7 @@ import {
   Star,
 } from "lucide-react";
 
-const API_URL = "https://puertocomercio-backend.onrender.com";
+const API_URL = "https://puertocomercio-catalogo-ls.onrender.com";
 
 export default function Catalogo() {
   const [productos, setProductos] = useState([]);
