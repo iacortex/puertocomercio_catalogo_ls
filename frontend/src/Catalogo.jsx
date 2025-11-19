@@ -17,6 +17,9 @@ import {
 } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL;
+
+
+
 console.log("API_URL =", API_URL);
 
 export default function Catalogo() {
@@ -499,7 +502,7 @@ export default function Catalogo() {
             >
               <div className="relative">
                 <img
-                  src={selectedProduct.imagen}
+                  src={`${API_URL}${selectedProduct.imagen}`}
                   alt={selectedProduct.nombre}
                   className="w-full h-64 object-cover"
                   onError={(e) => {
