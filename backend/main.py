@@ -129,7 +129,8 @@ async def upload_image(file: UploadFile = File(...)):
         content = await file.read()
         await out.write(content)
 
-    return {"ok": True, "ruta": f"/uploads/{fname}"}
+    return {"ok": True, "ruta": fname}
+
 
 # Servir archivos subidos
 @app.get("/uploads/{filename}")

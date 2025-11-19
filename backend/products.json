@@ -4,15 +4,10 @@
     {
       "nombre": "KENT TROPIC",
       "descripcion": "El sabor original de Kent con una cápsula de frutos rojos tropicales.",
-      "imagen": "http://localhost:3001/uploads/keen_tropic.png",
+      "imagen": "keen_tropic.png",
       "categoria": "CIGARRILLOS",
       "marca": "KENT",
-      "precios": [
-        {
-          "cantidad": "X20",
-          "precio": 51500
-        }
-      ],
+      "precios": [{ "cantidad": "X20", "precio": 51500 }],
       "intensidad": 4,
       "maxIntensidad": 5,
       "id": 101
@@ -20,15 +15,10 @@
     {
       "nombre": "KENT ROSE",
       "descripcion": "El sabor original de Kent con una cápsula de frutos rojos.",
-      "imagen": "http://localhost:3001/uploads/keen_rose.png",
+      "imagen": "keen_rose.png",
       "categoria": "CIGARRILLOS",
       "marca": "KENT",
-      "precios": [
-        {
-          "cantidad": "X20",
-          "precio": 51500
-        }
-      ],
+      "precios": [{ "cantidad": "X20", "precio": 51500 }],
       "intensidad": 4,
       "maxIntensidad": 5,
       "id": 102
@@ -36,15 +26,10 @@
     {
       "nombre": "KENT IKON MIX",
       "descripcion": "Cápsula sabor manzana mentolada.",
-      "imagen": "http://localhost:3001/uploads/keenikon.png",
+      "imagen": "keenikon.png",
       "categoria": "CIGARRILLOS",
       "marca": "KENT",
-      "precios": [
-        {
-          "cantidad": "X20",
-          "precio": 51500
-        }
-      ],
+      "precios": [{ "cantidad": "X20", "precio": 51500 }],
       "intensidad": 4,
       "maxIntensidad": 5,
       "id": 103
@@ -52,15 +37,10 @@
     {
       "nombre": "KENT WHITE UP",
       "descripcion": "Filtro tubo y carbón activado para menor irritación.",
-      "imagen": "http://localhost:3001/uploads/keen_white.png",
+      "imagen": "keen_white.png",
       "categoria": "CIGARRILLOS",
       "marca": "KENT",
-      "precios": [
-        {
-          "cantidad": "X20",
-          "precio": 54000
-        }
-      ],
+      "precios": [{ "cantidad": "X20", "precio": 54000 }],
       "intensidad": 1,
       "maxIntensidad": 5,
       "id": 104
@@ -68,15 +48,10 @@
     {
       "nombre": "KENT BLUE UP",
       "descripcion": "Cigarrillo con filtro tubo y carbón activado.",
-      "imagen": "http://localhost:3001/uploads/keen_blue.png",
+      "imagen": "keen_blue.png",
       "categoria": "CIGARRILLOS",
       "marca": "KENT",
-      "precios": [
-        {
-          "cantidad": "X20",
-          "precio": 54000
-        }
-      ],
+      "precios": [{ "cantidad": "X20", "precio": 54000 }],
       "intensidad": 1,
       "maxIntensidad": 5,
       "id": 105
@@ -84,15 +59,10 @@
     {
       "nombre": "KENT SILVER",
       "descripcion": "Cigarrillo suave con filtro tubo.",
-      "imagen": "http://localhost:3001/uploads/keen_silver.png",
+      "imagen": "keen_silver.png",
       "categoria": "CIGARRILLOS",
       "marca": "KENT",
-      "precios": [
-        {
-          "cantidad": "X20",
-          "precio": 54000
-        }
-      ],
+      "precios": [{ "cantidad": "X20", "precio": 54000 }],
       "intensidad": 2,
       "maxIntensidad": 5,
       "id": 106
@@ -100,15 +70,10 @@
     {
       "nombre": "KENT CLICK UP",
       "descripcion": "Filtro tubo con cápsula de mentol.",
-      "imagen": "http://localhost:3001/uploads/keen_click.png",
+      "imagen": "keen_click.png",
       "categoria": "CIGARRILLOS",
       "marca": "KENT",
-      "precios": [
-        {
-          "cantidad": "X20",
-          "precio": 57500
-        }
-      ],
+      "precios": [{ "cantidad": "X20", "precio": 57500 }],
       "intensidad": 4,
       "maxIntensidad": 5,
       "id": 107
@@ -116,15 +81,10 @@
     {
       "nombre": "KENT BOOST UP",
       "descripcion": "Tabaco mentolado con cápsula de mentol y filtro tubo.",
-      "imagen": "http://localhost:3001/uploads/keen_boost.png",
+      "imagen": "keen_boost.png",
       "categoria": "CIGARRILLOS",
       "marca": "KENT",
-      "precios": [
-        {
-          "cantidad": "X20",
-          "precio": 57500
-        }
-      ],
+      "precios": [{ "cantidad": "X20", "precio": 57500 }],
       "intensidad": 5,
       "maxIntensidad": 5,
       "id": 108
@@ -132,18 +92,12 @@
     {
       "nombre": "KENT BELMONT BLEND",
       "descripcion": "Cigarrillo con filtro tubo y carbón activado.",
-      "imagen": "http://localhost:3001/uploads/keen_belmont.png",
+      "imagen": "keen_belmont.png",
       "categoria": "CIGARRILLOS",
       "marca": "KENT",
       "precios": [
-        {
-          "cantidad": "X10",
-          "precio": 60000
-        },
-        {
-          "cantidad": "X20",
-          "precio": 49800
-        }
+        { "cantidad": "X10", "precio": 60000 },
+        { "cantidad": "X20", "precio": 49800 }
       ],
       "intensidad": 1,
       "maxIntensidad": 5,
@@ -152,18 +106,12 @@
     {
       "nombre": "LUCKY STRIKE SHARP CRUSH",
       "descripcion": "Tabaco premium sin mentol con cápsula de naranja y menta.",
-      "imagen": "http://localhost:3001/uploads/lucky_sharp.png",
+      "imagen": "lucky_sharp.png",
       "categoria": "CIGARRILLOS",
       "marca": "LUCKY STRIKE",
       "precios": [
-        {
-          "cantidad": "X10",
-          "precio": 71400
-        },
-        {
-          "cantidad": "X20",
-          "precio": 59500
-        }
+        { "cantidad": "X10", "precio": 71400 },
+        { "cantidad": "X20", "precio": 59500 }
       ],
       "intensidad": 5,
       "maxIntensidad": 5,
@@ -172,18 +120,12 @@
     {
       "nombre": "LUCKY STRIKE PURPLE WILD",
       "descripcion": "Cápsula de frutos rojos y menta.",
-      "imagen": "http://localhost:3001/uploads/lucky_purple.png",
+      "imagen": "lucky_purple.png",
       "categoria": "CIGARRILLOS",
       "marca": "LUCKY STRIKE",
       "precios": [
-        {
-          "cantidad": "X10",
-          "precio": 71400
-        },
-        {
-          "cantidad": "X20",
-          "precio": 59500
-        }
+        { "cantidad": "X10", "precio": 71400 },
+        { "cantidad": "X20", "precio": 59500 }
       ],
       "intensidad": 4,
       "maxIntensidad": 5,
@@ -192,18 +134,12 @@
     {
       "nombre": "LUCKY STRIKE CLICK FROST",
       "descripcion": "Cápsula sabor mentol.",
-      "imagen": "http://localhost:3001/uploads/lucky_frost.png",
+      "imagen": "lucky_frost.png",
       "categoria": "CIGARRILLOS",
       "marca": "LUCKY STRIKE",
       "precios": [
-        {
-          "cantidad": "X10",
-          "precio": 69500
-        },
-        {
-          "cantidad": "X20",
-          "precio": 57000
-        }
+        { "cantidad": "X10", "precio": 69500 },
+        { "cantidad": "X20", "precio": 57000 }
       ],
       "intensidad": 4,
       "maxIntensidad": 5,
@@ -212,15 +148,10 @@
     {
       "nombre": "LUCKY STRIKE FRESH TWIST",
       "descripcion": "Capsula de sandía y menta.",
-      "imagen": "http://localhost:3001/uploads/lucky_fresh.png",
+      "imagen": "lucky_fresh.png",
       "categoria": "CIGARRILLOS",
       "marca": "LUCKY STRIKE",
-      "precios": [
-        {
-          "cantidad": "X20",
-          "precio": 59500
-        }
-      ],
+      "precios": [{ "cantidad": "X20", "precio": 59500 }],
       "intensidad": 4,
       "maxIntensidad": 5,
       "id": 114
@@ -228,15 +159,10 @@
     {
       "nombre": "LUCKY STRIKE ECLIPSE",
       "descripcion": "Cigarrillo mentolado intenso.",
-      "imagen": "http://localhost:3001/uploads/lucky_eclipse.png",
+      "imagen": "lucky_eclipse.png",
       "categoria": "CIGARRILLOS",
       "marca": "LUCKY STRIKE",
-      "precios": [
-        {
-          "cantidad": "X20",
-          "precio": 59500
-        }
-      ],
+      "precios": [{ "cantidad": "X20", "precio": 59500 }],
       "intensidad": 5,
       "maxIntensidad": 5,
       "id": 115
@@ -244,15 +170,10 @@
     {
       "nombre": "LUCKY STRIKE CLICK",
       "descripcion": "Tabaco premium con cápsula de mentol.",
-      "imagen": "http://localhost:3001/uploads/lucky_click.png",
+      "imagen": "lucky_click.png",
       "categoria": "CIGARRILLOS",
       "marca": "LUCKY STRIKE",
-      "precios": [
-        {
-          "cantidad": "X20",
-          "precio": 45800
-        }
-      ],
+      "precios": [{ "cantidad": "X20", "precio": 45800 }],
       "intensidad": 4,
       "maxIntensidad": 5,
       "id": 116
@@ -260,15 +181,10 @@
     {
       "nombre": "LUCKY STRIKE FRESH WILD",
       "descripcion": "Tabaco premium con cápsula de berries.",
-      "imagen": "http://localhost:3001/uploads/lucky_fresh_wild.png",
+      "imagen": "lucky_fresh_wild.png",
       "categoria": "CIGARRILLOS",
       "marca": "LUCKY STRIKE",
-      "precios": [
-        {
-          "cantidad": "X20",
-          "precio": 59550
-        }
-      ],
+      "precios": [{ "cantidad": "X20", "precio": 59550 }],
       "intensidad": 4,
       "maxIntensidad": 5,
       "id": 117
@@ -276,15 +192,10 @@
     {
       "nombre": "LUCKY STRIKE EXOTIC JOY",
       "descripcion": "Tabaco premium con cápsula de melón.",
-      "imagen": "http://localhost:3001/uploads/keen_exotic_joy.png",
+      "imagen": "keen_exotic_joy.png",
       "categoria": "CIGARRILLOS",
       "marca": "LUCKY STRIKE",
-      "precios": [
-        {
-          "cantidad": "X20",
-          "precio": 45800
-        }
-      ],
+      "precios": [{ "cantidad": "X20", "precio": 45800 }],
       "intensidad": 4,
       "maxIntensidad": 5,
       "id": 118
@@ -292,18 +203,12 @@
     {
       "nombre": "LUCKY STRIKE AZUL",
       "descripcion": "Cigarrillo sin mentol con sabor a tabaco tostado.",
-      "imagen": "http://localhost:3001/uploads/lucky_azul.png",
+      "imagen": "lucky_azul.png",
       "categoria": "CIGARRILLOS",
       "marca": "LUCKY STRIKE",
       "precios": [
-        {
-          "cantidad": "X10",
-          "precio": 61500
-        },
-        {
-          "cantidad": "X20",
-          "precio": 54500
-        }
+        { "cantidad": "X10", "precio": 61500 },
+        { "cantidad": "X20", "precio": 54500 }
       ],
       "intensidad": 3,
       "maxIntensidad": 5,
@@ -312,18 +217,12 @@
     {
       "nombre": "LUCKY STRIKE ROJO",
       "descripcion": "Cigarrillo con tabaco más intenso.",
-      "imagen": "http://localhost:3001/uploads/lucky_rojo.png",
+      "imagen": "lucky_rojo.png",
       "categoria": "CIGARRILLOS",
       "marca": "LUCKY STRIKE",
       "precios": [
-        {
-          "cantidad": "X20",
-          "precio": 52000
-        },
-        {
-          "cantidad": "X20",
-          "precio": 54500
-        }
+        { "cantidad": "X20", "precio": 52000 },
+        { "cantidad": "X20", "precio": 54500 }
       ],
       "intensidad": 4,
       "maxIntensidad": 5,
@@ -332,18 +231,12 @@
     {
       "nombre": "LUCKY STRIKE PATERSON",
       "descripcion": "Cigarrillo sabor clásico.",
-      "imagen": "http://localhost:3001/uploads/lucky_paterson.png",
+      "imagen": "lucky_paterson.png",
       "categoria": "CIGARRILLOS",
       "marca": "LUCKY STRIKE",
       "precios": [
-        {
-          "cantidad": "X20",
-          "precio": 38800
-        },
-        {
-          "cantidad": "Blanda X20",
-          "precio": 35800
-        }
+        { "cantidad": "X20", "precio": 38800 },
+        { "cantidad": "Blanda X20", "precio": 35800 }
       ],
       "intensidad": 3,
       "maxIntensidad": 5,
@@ -352,18 +245,12 @@
     {
       "nombre": "PALL MALL CLIC ON",
       "descripcion": "Cápsula sabor mentol.",
-      "imagen": "http://localhost:3001/uploads/pallmall_clickonn.png",
+      "imagen": "pallmall_clickonn.png",
       "categoria": "CIGARRILLOS",
       "marca": "PALL MALL",
       "precios": [
-        {
-          "cantidad": "X10",
-          "precio": 52000
-        },
-        {
-          "cantidad": "X20",
-          "precio": 47500
-        }
+        { "cantidad": "X10", "precio": 52000 },
+        { "cantidad": "X20", "precio": 47500 }
       ],
       "intensidad": 3,
       "maxIntensidad": 5,
@@ -372,15 +259,10 @@
     {
       "nombre": "PALL MALL SUNSET",
       "descripcion": "Cápsula sabor frambuesa.",
-      "imagen": "http://localhost:3001/uploads/pallmall_sunseet.png",
+      "imagen": "pallmall_sunseet.png",
       "categoria": "CIGARRILLOS",
       "marca": "PALL MALL",
-      "precios": [
-        {
-          "cantidad": "X20",
-          "precio": 47500
-        }
-      ],
+      "precios": [{ "cantidad": "X20", "precio": 47500 }],
       "intensidad": 5,
       "maxIntensidad": 5,
       "id": 123
@@ -388,18 +270,12 @@
     {
       "nombre": "PALL MALL BOOST",
       "descripcion": "Cápsula sabor mentol intenso.",
-      "imagen": "http://localhost:3001/uploads/pallmall_boost.png",
+      "imagen": "pallmall_boost.png",
       "categoria": "CIGARRILLOS",
       "marca": "PALL MALL",
       "precios": [
-        {
-          "cantidad": "X10",
-          "precio": 52000
-        },
-        {
-          "cantidad": "X20",
-          "precio": 47500
-        }
+        { "cantidad": "X10", "precio": 52000 },
+        { "cantidad": "X20", "precio": 47500 }
       ],
       "intensidad": 4,
       "maxIntensidad": 5,
@@ -408,15 +284,10 @@
     {
       "nombre": "PALL MALL TRIS",
       "descripcion": "Cigarrillo baja intensidad.",
-      "imagen": "http://localhost:3001/uploads/keenboosup.png",
+      "imagen": "keenboosup.png",
       "categoria": "CIGARRILLOS",
       "marca": "PALL MALL",
-      "precios": [
-        {
-          "cantidad": "X20",
-          "precio": 39500
-        }
-      ],
+      "precios": [{ "cantidad": "X20", "precio": 39500 }],
       "intensidad": 2,
       "maxIntensidad": 5,
       "id": 125
@@ -424,15 +295,10 @@
     {
       "nombre": "PALL MALL SUNRISE MIX",
       "descripcion": "Mezcla Pall Mall Sunset con Click.",
-      "imagen": "http://localhost:3001/uploads/pallmall_sunrise.png",
+      "imagen": "pallmall_sunrise.png",
       "categoria": "CIGARRILLOS",
       "marca": "PALL MALL",
-      "precios": [
-        {
-          "cantidad": "X20",
-          "precio": 47500
-        }
-      ],
+      "precios": [{ "cantidad": "X20", "precio": 47500 }],
       "intensidad": 4,
       "maxIntensidad": 5,
       "id": 126
@@ -440,22 +306,13 @@
     {
       "nombre": "PALL MALL ROJO",
       "descripcion": "Cigarrillos de alta intensidad.",
-      "imagen": "http://localhost:3001/uploads/pallmall_rojo.png",
+      "imagen": "pallmall_rojo.png",
       "categoria": "CIGARRILLOS",
       "marca": "PALL MALL",
       "precios": [
-        {
-          "cantidad": "Cajetilla Blanda",
-          "precio": 34500
-        },
-        {
-          "cantidad": "Formato XL",
-          "precio": 39500
-        },
-        {
-          "cantidad": "X10",
-          "precio": 38000
-        }
+        { "cantidad": "Cajetilla Blanda", "precio": 34500 },
+        { "cantidad": "Formato XL", "precio": 39500 },
+        { "cantidad": "X10", "precio": 38000 }
       ],
       "intensidad": 4,
       "maxIntensidad": 5,
@@ -464,22 +321,13 @@
     {
       "nombre": "PALL MALL AZUL",
       "descripcion": "Cigarrillo de intensidad media.",
-      "imagen": "http://localhost:3001/uploads/pallmall_azul.png",
+      "imagen": "pallmall_azul.png",
       "categoria": "CIGARRILLOS",
       "marca": "PALL MALL",
       "precios": [
-        {
-          "cantidad": "Cajetilla Blanda",
-          "precio": 34500
-        },
-        {
-          "cantidad": "Formato XL",
-          "precio": 39500
-        },
-        {
-          "cantidad": "X10",
-          "precio": 38000
-        }
+        { "cantidad": "Cajetilla Blanda", "precio": 34500 },
+        { "cantidad": "Formato XL", "precio": 39500 },
+        { "cantidad": "X10", "precio": 38000 }
       ],
       "intensidad": 3,
       "maxIntensidad": 5,
