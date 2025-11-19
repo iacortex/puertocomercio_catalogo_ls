@@ -1,0 +1,174 @@
+{
+  "productos": [
+    {
+      "id": 1,
+      "categoria": "TABACOS",
+      "nombre": "BRISTOL TABACO UVA",
+      "marca": "BRISTOL",
+      "intensidad": 3,
+      "maxIntensidad": 5,
+      "descripcion": "Tabaco sabor uva",
+      "precios": [
+        {
+          "cantidad": "10g",
+          "precio": 2500
+        }
+      ],
+      "imagen": "/keenboosup.png",
+      "color": "from-purple-500 to-violet-600"
+    },
+    {
+      "id": 2,
+      "categoria": "TABACOS",
+      "nombre": "BRISTOL TABACO MANGO",
+      "marca": "BRISTOL",
+      "intensidad": 3,
+      "maxIntensidad": 5,
+      "descripcion": "Tabaco sabor mango",
+      "precios": [
+        {
+          "cantidad": "10g",
+          "precio": 2500
+        }
+      ],
+      "imagen": "/keenboosup.png",
+      "color": "from-yellow-400 to-orange-500"
+    },
+    {
+      "id": 3,
+      "categoria": "PAPELILLOS",
+      "nombre": "BRISTOL PAPELILLO Uva",
+      "marca": "BRISTOL",
+      "descripcion": "Papelillo sabor uva",
+      "precios": [
+        {
+          "cantidad": "1u",
+          "precio": 500
+        }
+      ],
+      "imagen": "/keenboosup.png",
+      "color": "from-purple-500 to-violet-600"
+    },
+    {
+      "id": 4,
+      "categoria": "FILTROS",
+      "nombre": "BRISTOL FILTRO SLIM LONG",
+      "marca": "BRISTOL",
+      "descripcion": "Filtros slim largos",
+      "precios": [
+        {
+          "cantidad": "50u",
+          "precio": 1200
+        }
+      ],
+      "imagen": "/keenboosup.png",
+      "color": "from-slate-400 to-slate-600"
+    },
+    {
+      "id": 5,
+      "categoria": "ECONOMICOS",
+      "nombre": "ATLAS GOLD",
+      "marca": "ATLAS",
+      "descripcion": "Cigarrillo económico",
+      "precios": [
+        {
+          "cantidad": "X20",
+          "precio": 32000
+        }
+      ],
+      "imagen": "/keenboosup.png",
+      "intensidad": 3,
+      "maxIntensidad": 5,
+      "color": "from-amber-500 to-yellow-700"
+    },
+    {
+      "id": 6,
+      "categoria": "ECONOMICOS",
+      "nombre": "FOX KS",
+      "marca": "FOX",
+      "descripcion": "Cigarrillo económico",
+      "precios": [
+        {
+          "cantidad": "X20",
+          "precio": 31000
+        }
+      ],
+      "imagen": "/keenboosup.png",
+      "intensidad": 2,
+      "maxIntensidad": 5,
+      "color": "from-orange-400 to-red-500"
+    },
+    {
+      "id": 7,
+      "categoria": "CIGARRILLOS",
+      "nombre": "MALBORO CRAFTED MENTHOL",
+      "marca": "MALBORO",
+      "intensidad": 4,
+      "maxIntensidad": 5,
+      "descripcion": "Filtro tubo y carbón activado con cápsula de mentol",
+      "precios": [
+        {
+          "cantidad": "X20",
+          "precio": 51509
+        },
+        {
+          "cantidad": "X10",
+          "precio": 60000
+        }
+      ],
+      "imagen": "/keenboosup.png",
+      "color": "from-emerald-400 to-teal-600"
+    },
+    {
+      "id": 8,
+      "categoria": "CIGARRILLOS",
+      "nombre": "KENT BOOST",
+      "marca": "KENT",
+      "intensidad": 5,
+      "maxIntensidad": 5,
+      "descripcion": "Tabaco mentolado con cápsula de mentol y filtro tubo",
+      "precios": [
+        {
+          "cantidad": "X20",
+          "precio": 57500
+        }
+      ],
+      "imagen": "/keenboosup.png",
+      "color": "from-teal-500 to-cyan-600"
+    },
+    {
+      "id": 9,
+      "categoria": "CIGARRILLOS",
+      "nombre": "LUCKY STRIKE PURPLE WILD",
+      "marca": "LUCKY STRIKE",
+      "intensidad": 4,
+      "maxIntensidad": 5,
+      "descripcion": "Frutos rojos + menta",
+      "precios": [
+        {
+          "cantidad": "X20",
+          "precio": 59500
+        }
+      ],
+      "imagen": "/keenboosup.png",
+      "color": "from-purple-500 to-pink-500"
+    },
+    {
+      "id": 10,
+      "categoria": "CIGARRILLOS",
+      "nombre": "PALL MALL ROJO",
+      "marca": "PALL MALL",
+      "intensidad": 4,
+      "maxIntensidad": 5,
+      "descripcion": "Sabor fuerte clásico",
+      "precios": [
+        {
+          "cantidad": "X20",
+          "precio": 39500
+        }
+      ],
+      "imagen": "/keenboosup.png",
+      "color": "from-red-400 to-red-600"
+    }
+  ]
+}
