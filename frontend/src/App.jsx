@@ -1,18 +1,25 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import AdminPanel from "./AdminPanel"; // si lo tienes en src/ directo
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
+import PrivateRoute from "./router/PrivateRoute";
+import Catalogo from "./pages/Catalogo"; // si tienes la página catálogo
 
 export default function App() {
-  const token = localStorage.getItem("token");
-
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route
-        path="/"
-        element={token ? <Dashboard /> : <Navigate to="/login" />}
-      />
-      <Route path="*" element={<Navigate to="/" />} />
-    </Routes>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={Catalogo ? <Catalogo /> : <div>Catálogo</div>} />
+        <Route path="/admin/login" element={<Login />} />
+        <Route
+          path="/admin"
+          element={
+            <PrivateRoute>
+              <AdminPanel />
+            </PrivateRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }

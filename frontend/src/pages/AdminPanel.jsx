@@ -1,18 +1,12 @@
-// src/AdminPanel.jsx
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Edit3, Trash, Sun, Moon, Save, X } from "lucide-react";
-import { resolveImageUrl } from "./lib/utils";
-import { uploadImageToBackend } from "./lib/uploadImage";
+import { resolveImageUrl } from "../lib/utils";
+import { uploadImageToBackend } from "../lib/uploadImage";
 
-
-
-
-// --- API BASE ---
 // --- API BASE ---
 const API_BASE = import.meta.env?.VITE_API_URL || "http://localhost:3001";
 const API = `${API_BASE.replace(/\/$/, "")}/productos`;
-
 
 // --- Constantes ---
 const categorias = ["TABACOS", "FILTROS", "PAPELILLOS", "ECONOMICOS", "CIGARRILLOS"];
@@ -84,8 +78,6 @@ export default function AdminPanel() {
 
   const editarProducto = (p) => {
     setEditando(p.id);
-    // Si la imagen es relativa (p ej '/uploads/foo.png') la dejamos tal cual,
-    // resolveImageUrl la convertirá al mostrarla.
     setForm({
       nombre: p.nombre || "",
       descripcion: p.descripcion || "",
@@ -105,7 +97,14 @@ export default function AdminPanel() {
   const borrarProducto = async (id) => {
     if (!confirm("¿Eliminar este producto?")) return;
     try {
-      await fetch(`${API}/${id}`, { method: "DELETE" });
+      const token = localStorage.getItem("token");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const res = await fetch(`${API}/${id}`, { method: "DELETE", headers });
+      if (!res.ok) {
+        const d = await res.json().catch(()=>({}));
+        console.error("Error eliminando:", d);
+        return alert("Error al eliminar");
+      }
       setProductos((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
       console.error("Error eliminando:", err);
@@ -155,14 +154,20 @@ export default function AdminPanel() {
       const url = editando ? `${API}/${editando}` : API;
       const method = editando ? "PUT" : "POST";
 
+      const token = localStorage.getItem("token");
+      const headers = {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      };
+
       const res = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
-      if (!data.ok) {
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) {
         console.error("Error guardando producto:", data);
         return alert("Error al guardar");
       }

@@ -1,57 +1,44 @@
 import { useState } from "react";
-import axios from "axios";
-
-const API = "http://72.61.56.128";
+import api from "../api/axios";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [user, setUser] = useState("");
+  const [pass, setPass] = useState("");
   const [error, setError] = useState("");
 
-  const login = async (e) => {
-    e.preventDefault();
-    setError("");
-
+  const login = async () => {
     try {
-      const { data } = await axios.post(`${API}/auth/login`, {
-        email,
-        password,
+      const { data } = await api.post("/auth/login", {
+        username: user,
+        password: pass,
       });
 
-      if (data.ok) {
-        localStorage.setItem("token", data.token);
-        window.location.href = "/admin";
-      }
-    } catch (err) {
+      localStorage.setItem("token", data.access_token);
+      window.location.href = "/admin";
+    } catch (e) {
       setError("Credenciales incorrectas");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
-      <form onSubmit={login} className="w-80 bg-gray-800 p-6 rounded-xl">
-        <h1 className="text-2xl mb-4 text-center">Puerto Comercio Admin</h1>
+    <div style={{ padding: 40 }}>
+      <h1>Login Admin</h1>
+      <input
+        placeholder="Usuario"
+        value={user}
+        onChange={(e) => setUser(e.target.value)}
+      /><br/><br/>
 
-        {error && <p className="text-red-500 text-center">{error}</p>}
+      <input
+        placeholder="Contraseña"
+        type="password"
+        value={pass}
+        onChange={(e) => setPass(e.target.value)}
+      /><br/><br/>
 
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-2 rounded bg-gray-700 mb-3"
-          onChange={(e) => setEmail(e.target.value)}
-        />
+      <button onClick={login}>Ingresar</button>
 
-        <input
-          type="password"
-          placeholder="Contraseña"
-          className="w-full p-2 rounded bg-gray-700 mb-3"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <button className="bg-blue-600 w-full p-2 rounded mt-3 hover:bg-blue-700">
-          Entrar
-        </button>
-      </form>
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 }
