@@ -1,6 +1,6 @@
 import os
 import json
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -8,6 +8,10 @@ from typing import List, Optional
 from uuid import uuid4
 import aiofiles
 import asyncio
+
+# Auth
+from fastapi import Depends
+from routes.auth import router as auth_router, get_current_user
 
 BASE_DIR = os.path.dirname(__file__)
 JSON_PATH = os.path.join(BASE_DIR, "products.json")
@@ -18,14 +22,17 @@ lock = asyncio.Lock()  # para evitar race conditions en el archivo JSON
 
 app = FastAPI(title="Puerto Comercio - API", version="1.0")
 
-# CORS - permite que tu frontend en otro puerto se conecte
+# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # en producción restringir
+    allow_origins=["*"],  # restringir en producción
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Rutas Auth
+app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 
 # -----------------------
 # Models
@@ -48,12 +55,11 @@ class Producto(ProductoIn):
     id: int
 
 # -----------------------
-# Helpers para JSON
+# Helpers JSON
 # -----------------------
 async def read_db():
     async with lock:
         if not os.path.exists(JSON_PATH):
-            # crear base vacía
             with open(JSON_PATH, "w", encoding="utf-8") as f:
                 json.dump({"nextId": 100, "productos": []}, f, ensure_ascii=False, indent=2)
         with open(JSON_PATH, "r", encoding="utf-8") as f:
@@ -81,8 +87,12 @@ async def obtener_producto(producto_id: int):
             return {"ok": True, "producto": p}
     raise HTTPException(status_code=404, detail="Producto no encontrado")
 
+# ---------- RUTAS PROTEGIDAS ----------
 @app.post("/productos", status_code=201)
-async def crear_producto(payload: ProductoIn):
+async def crear_producto(
+    payload: ProductoIn,
+    user: dict = Depends(get_current_user)
+):
     data = await read_db()
     nid = data.get("nextId", 1)
     nuevo = payload.dict()
@@ -93,7 +103,11 @@ async def crear_producto(payload: ProductoIn):
     return {"ok": True, "producto": nuevo}
 
 @app.put("/productos/{producto_id}")
-async def actualizar_producto(producto_id: int, payload: ProductoIn):
+async def actualizar_producto(
+    producto_id: int,
+    payload: ProductoIn,
+    user: dict = Depends(get_current_user)
+):
     data = await read_db()
     productos = data.get("productos", [])
     for i, p in enumerate(productos):
@@ -106,7 +120,10 @@ async def actualizar_producto(producto_id: int, payload: ProductoIn):
     raise HTTPException(status_code=404, detail="Producto no encontrado")
 
 @app.delete("/productos/{producto_id}")
-async def eliminar_producto(producto_id: int):
+async def eliminar_producto(
+    producto_id: int,
+    user: dict = Depends(get_current_user)
+):
     data = await read_db()
     productos = data.get("productos", [])
     new = [p for p in productos if p["id"] != producto_id]
@@ -117,22 +134,25 @@ async def eliminar_producto(producto_id: int):
     return {"ok": True}
 
 # -----------------------
-# Upload de imágenes
+# Upload de imágenes (PROTEGIDO)
 # -----------------------
 @app.post("/upload-image")
-async def upload_image(file: UploadFile = File(...)):
+async def upload_image(
+    file: UploadFile = File(...),
+    user: dict = Depends(get_current_user)
+):
     ext = os.path.splitext(file.filename)[1]
     fname = f"{uuid4().hex}{ext or '.jpg'}"
+
     dest = os.path.join(UPLOAD_DIR, fname)
 
     async with aiofiles.open(dest, "wb") as out:
         content = await file.read()
         await out.write(content)
 
-    return {"ok": True, "ruta": fname}
+    return {"ok": True, "ruta": f"/uploads/{fname}"}
 
-
-# Servir archivos subidos
+# Servir imágenes (PÚBLICO)
 @app.get("/uploads/{filename}")
 async def serve_uploads(filename: str):
     path = os.path.join(UPLOAD_DIR, filename)

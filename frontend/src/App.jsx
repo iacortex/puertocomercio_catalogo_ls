@@ -1,15 +1,18 @@
-import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Catalogo from "./Catalogo";
-import AdminPanel from "./AdminPanel";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 
 export default function App() {
+  const token = localStorage.getItem("token");
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Catalogo />} />
-        <Route path="/admin" element={<AdminPanel />} />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route
+        path="/"
+        element={token ? <Dashboard /> : <Navigate to="/login" />}
+      />
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
   );
 }

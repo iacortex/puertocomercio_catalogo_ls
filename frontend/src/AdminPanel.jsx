@@ -5,6 +5,9 @@ import { Plus, Edit3, Trash, Sun, Moon, Save, X } from "lucide-react";
 import { resolveImageUrl } from "./lib/utils";
 import { uploadImageToBackend } from "./lib/uploadImage";
 
+
+
+
 // --- API BASE ---
 // --- API BASE ---
 const API_BASE = import.meta.env?.VITE_API_URL || "http://localhost:3001";
