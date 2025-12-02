@@ -3,10 +3,7 @@ uvicorn[standard]==0.22.0
 python-multipart==0.0.6
 pydantic==1.10.11
 aiofiles==23.1.0
-<<<<<<< HEAD
-python-jose[cryptography] 
+python-jose[cryptography]
 passlib[bcrypt]
-=======
 reportlab
 pillow
->>>>>>> recuperar-cambios

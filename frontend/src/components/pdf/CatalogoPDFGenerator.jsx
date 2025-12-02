@@ -1,255 +1,205 @@
-// CatalogoPDFGenerator.jsx
 import React, { useMemo, useRef } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
-/**
- * CatalogoPDFGenerator
- * Props:
- *  - products: array de productos (mismo objeto que usas en Catalogo.jsx)
- *  - logoUrl: url del logo a usar en portada (puede ser /logo.png si lo copias a /public)
- *  - title: título de portada
- *  - subtitle: subtítulo de portada
- *
- * Uso:
- * <CatalogoPDFGenerator products={filtrados} logoUrl="/logo.png" title="Puerto Comercio" />
- */
+// ⭐ PORTADA ULTRA PREMIUM CON DEGRADADOS, EFECTOS Y DISEÑO
+async function drawPremiumCover(pdf, portadaUrl, title, subtitle) {
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+
+  // Fondo degradado vertical estilo premium
+  const gradient = pdf.context2d.createLinearGradient(0, 0, 0, pageHeight);
+  gradient.addColorStop(0, "#001f3f");
+  gradient.addColorStop(0.5, "#0d3c61");
+  gradient.addColorStop(1, "#001e2f");
+  pdf.context2d.fillStyle = gradient;
+  pdf.context2d.fillRect(0, 0, pageWidth, pageHeight);
+
+  // Imagen de portada centrada
+  try {
+    const img = await fetchImageAsDataURL(portadaUrl);
+    const imgWidth = pageWidth * 0.85;
+    const imgHeight = (imgWidth * 12) / 9;
+    const imgX = (pageWidth - imgWidth) / 2;
+    const imgY = 25;
+
+    pdf.addImage(img, "PNG", imgX, imgY, imgWidth, imgHeight, "", "FAST");
+  } catch (err) {
+    console.log("Error cargando portada", err);
+  }
+
+  // Capa glass suave
+  pdf.setFillColor(255, 255, 255, 0.08);
+  pdf.roundedRect(10, 10, pageWidth - 20, pageHeight - 20, 10, 10, "F");
+
+  // TÍTULO grande con sombra
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(30);
+  pdf.setTextColor(255, 255, 255);
+  pdf.text(title, pageWidth / 2 + 1, 250 + 1, { align: "center" });
+  pdf.setTextColor("#ffe680");
+  pdf.text(title, pageWidth / 2, 250, { align: "center" });
+
+  // SUBTÍTULO elegante
+  pdf.setFontSize(15);
+  pdf.setTextColor("#ffffffcc");
+  pdf.text(subtitle, pageWidth / 2, 268, { align: "center" });
+
+  // AÑO 2025 estilo dorado
+  pdf.setFontSize(56);
+  pdf.setTextColor("#ffd700");
+  pdf.text("2025", pageWidth / 2, 310, { align: "center" });
+
+  // Línea elegante bajo el año
+  pdf.setDrawColor("#ffaa00");
+  pdf.setLineWidth(0.8);
+  pdf.line(pageWidth / 2 - 30, 318, pageWidth / 2 + 30, 318);
+}
+
+async function fetchImageAsDataURL(url) {
+  const res = await fetch(url, { mode: "cors" });
+  const blob = await res.blob();
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function ensureImagesLoaded(node) {
+  const imgs = node.querySelectorAll("img");
+  return Promise.all(
+    [...imgs].map(
+      (img) =>
+        new Promise((resolve) => {
+          if (img.complete) return resolve();
+          img.onload = img.onerror = () => resolve();
+        })
+    )
+  );
+}
 
 export default function CatalogoPDFGenerator({
   products = [],
-  logoUrl = "/logo.png",
+  portadaUrl = "http://72.61.56.128:8000/uploads/catalogo_portada.png",
   title = "PUERTO COMERCIO",
-  subtitle = "Catálogo 2025 — Edición Premium",
+  subtitle = "Catálogo Premium — Edición 2025",
 }) {
   const hiddenRef = useRef(null);
 
-  // Agrupar productos por página: 2 columnas x 3 filas = 6 por página (ajustable)
+  // Productos por página estilo revista
   const itemsPerPage = 6;
   const pages = useMemo(() => {
     const arr = [];
     for (let i = 0; i < products.length; i += itemsPerPage) {
       arr.push(products.slice(i, i + itemsPerPage));
     }
-    // si no hay productos aún, crea al menos una página vacía
     return arr.length ? arr : [[]];
   }, [products]);
 
-  // Helper para forzar que imágenes carguen con crossOrigin para html2canvas
-  // (recomendado: servir imágenes con Access-Control-Allow-Origin: *)
-  const makeImgTag = (src, alt = "") =>
-    `<img src="${src}" alt="${alt}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;" crossorigin="anonymous" />`;
-
   async function generatePDF() {
-    // A4 en mm
     const pdf = new jsPDF("p", "mm", "a4");
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
 
-    // --- PORTADA ---
-    // Diseño portada con jsPDF (texto + logo)
-    try {
-      // fondo sutil
-      pdf.setFillColor(245, 247, 250);
-      pdf.rect(0, 0, pageWidth, pageHeight, "F");
+    // ⭐ 1. PORTADA PREMIUM
+    await drawPremiumCover(pdf, portadaUrl, title, subtitle);
 
-      // logo (si existe) lo intentamos poner en la portada
-      if (logoUrl) {
-        // usamos html2canvas para capturar logo si es necesario; pero jsPDF puede cargar dataURL.
-        try {
-          const logoCanvas = await html2canvas(document.querySelector(`#pdf-logo-demo`) || document.body, {
-            backgroundColor: null,
-            useCORS: true,
-          });
-          // no útil si no hay un nodo; ignoramos
-        } catch (e) {
-          // no fatal
-        }
-      }
+    pdf.addPage();
 
-      // Título grande
-      pdf.setFontSize(28);
-      pdf.setTextColor(22, 33, 62);
-      pdf.text(title, pageWidth / 2, 60, { align: "center" });
-
-      pdf.setFontSize(14);
-      pdf.setTextColor(80, 90, 110);
-      pdf.text(subtitle, pageWidth / 2, 76, { align: "center" });
-
-      // fecha
-      pdf.setFontSize(10);
-      const fecha = new Date().toLocaleDateString();
-      pdf.text(`Generado: ${fecha}`, pageWidth - 10, pageHeight - 10, { align: "right" });
-
-      // Add small logo bottom-left if exists (we'll try to draw image by loading it)
-      if (logoUrl) {
-        try {
-          const logoImg = await fetchImageAsDataURL(logoUrl);
-          const logoW = 30; // mm
-          const logoH = (logoW * 50) / 50; // proporción aproximada
-          pdf.addImage(logoImg, "PNG", 12, pageHeight - 12 - logoH, logoW, logoH);
-        } catch (err) {
-          // ignore if logo fails
-        }
-      }
-
-      pdf.addPage();
-    } catch (err) {
-      console.error("Error portada PDF:", err);
-    }
-
-    // --- ÍNDICE (opcional) ---
-    pdf.setFontSize(16);
-    pdf.setTextColor(20, 30, 60);
+    // ⭐ ÍNDICE
+    pdf.setFontSize(22);
+    pdf.setTextColor("#333");
     pdf.text("Índice", 15, 20);
 
-    // simple índice: categorias / cuenta (puedes ajustar)
     const categories = {};
     products.forEach((p) => {
-      const cat = (p?.categoria || "Otros").toString();
+      const cat = p.categoria || "Otros";
       categories[cat] = (categories[cat] || 0) + 1;
     });
 
-    pdf.setFontSize(11);
-    let yIndex = 30;
+    let y = 40;
+    pdf.setFontSize(13);
+    pdf.setTextColor("#444");
+
     Object.keys(categories).forEach((c) => {
-      pdf.text(`• ${c} (${categories[c]})`, 18, yIndex);
-      yIndex += 7;
-      if (yIndex > pageHeight - 20) {
-        pdf.addPage();
-        yIndex = 20;
-      }
+      pdf.text(`• ${c} (${categories[c]})`, 20, y);
+      y += 8;
     });
 
     pdf.addPage();
 
-    // --- PÁGINAS DE PRODUCTOS ---
-    // Usamos un contenedor DOM (hidden but visible off-screen) con cada "page" pre-renderizada
-    // y luego capturamos cada página con html2canvas (mejor calidad que capturar todo de una).
+    // ⭐ 3. PÁGINAS DE PRODUCTOS (HTML → PDF)
     const hidden = hiddenRef.current;
-    if (!hidden) {
-      alert("Error interno: contenedor invisible no encontrado");
-      return;
-    }
-
-    // Forzamos que esté visible fuera de pantalla para html2canvas:
-    hidden.style.position = "fixed";
-    hidden.style.left = "-10000px";
-    hidden.style.top = "0";
-    hidden.style.zIndex = "-1000";
     hidden.style.display = "block";
+    hidden.style.position = "fixed";
+    hidden.style.left = "-2000px";
 
-    try {
-      // Recorremos cada página (cada hijo del contenedor hidden)
-      const pageNodes = Array.from(hidden.children);
-      for (let i = 0; i < pageNodes.length; i++) {
-        const node = pageNodes[i];
-        // Esperar que imágenes carguen
-        await ensureImagesLoaded(node);
+    const nodes = hidden.children;
 
-        const canvas = await html2canvas(node, { scale: 2, useCORS: true, allowTaint: false, backgroundColor: null });
-        const imgData = canvas.toDataURL("image/png");
+    for (let i = 0; i < nodes.length; i++) {
+      const node = nodes[i];
 
-        // ajustar imagen en pdf manteniendo proporción
-        const imgProps = pdf.getImageProperties(imgData);
-        const imgWmm = pageWidth;
-        const imgHmm = (imgProps.height * imgWmm) / imgProps.width;
+      await ensureImagesLoaded(node);
 
-        // si es la primera página del bloque, ya estamos en una página nueva, si no agregamos
-        // Nota: ya añadimos varias páginas (portada, indice). Simplemente agregamos imagen y página siguiente
-        pdf.addImage(imgData, "PNG", 0, 0, imgWmm, imgHmm);
-        if (i < pageNodes.length - 1) {
-          pdf.addPage();
-        }
-      }
-    } catch (err) {
-      console.error("Error generando páginas de productos:", err);
-    } finally {
-      // ocultar el container de nuevo
-      hidden.style.display = "none";
+      const canvas = await html2canvas(node, {
+        scale: 2,
+        useCORS: true,
+      });
+
+      const img = canvas.toDataURL("image/png");
+      pdf.addImage(img, "PNG", 0, 0, pageWidth, pageHeight);
+
+      if (i < nodes.length - 1) pdf.addPage();
     }
 
-    // Guardar
-    pdf.save("catalogo_puerto_comercio_revista.pdf");
+    hidden.style.display = "none";
+
+    pdf.save("catalogo_puerto_comercio_premium.pdf");
   }
 
-  // ayuda: convertir imagen a dataURL
-  async function fetchImageAsDataURL(url) {
-    const res = await fetch(url, { mode: "cors" });
-    const blob = await res.blob();
-    return await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  }
-
-  // espera que todas las imágenes dentro de un nodo hayan cargado
-  function ensureImagesLoaded(node) {
-    const imgs = Array.from(node.querySelectorAll("img"));
-    return Promise.all(
-      imgs.map(
-        (img) =>
-          new Promise((resolve) => {
-            if (img.complete) return resolve();
-            img.onload = img.onerror = () => resolve();
-          })
-      )
-    );
-  }
-
-  // --- RENDER: hidden pages offscreen + botón ---
   return (
     <>
-      <div className="flex items-center gap-3">
-        <button
-          onClick={generatePDF}
-          className="px-4 py-2 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 text-white shadow-lg hover:shadow-xl transition-all"
-        >
-          📄 Descargar Catálogo (Revista)
-        </button>
-      </div>
-
-      {/* Hidden (off-screen) container with preformatted pages */}
-      <div
-        ref={hiddenRef}
-        id="catalogo-pdf-hidden"
-        style={{ display: "none" }} /* se mostrará temporalmente en generatePDF */
+      <button
+        onClick={generatePDF}
+        className="px-5 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-xl shadow-lg hover:scale-105 transition"
       >
-        {/* portada sucia — la portada ya la hacemos con jsPDF, pero dejamos una previsualización */}
-        {/* Páginas de productos: cada hijo corresponde a 1 página A4 renderable */}
-        {pages.map((pageItems, pageIndex) => (
+        📘 Descargar PDF Premium
+      </button>
+
+      {/* Contenido HTML oculto para html2canvas */}
+      <div ref={hiddenRef} style={{ display: "none" }}>
+        {pages.map((pageItems, index) => (
           <div
-            key={pageIndex}
-            className="pdf-page"
+            key={index}
             style={{
-              width: "794px", // A4 @ 96dpi ≈ 794 x 1123
+              width: "794px",
               height: "1123px",
-              boxSizing: "border-box",
+              background: "#ffffff",
               padding: "36px",
-              background: "white",
-              color: "#111827",
               display: "flex",
               flexDirection: "column",
-              gap: "12px",
-              fontFamily: "Arial, Helvetica, sans-serif",
+              gap: "14px",
+              boxShadow: "0 0 20px rgba(0,0,0,0.1)",
             }}
           >
-            {/* Header de la página */}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div style={{ fontSize: "18px", fontWeight: 700 }}>{title}</div>
-              <div style={{ fontSize: "12px", color: "#6b7280" }}>
-                {new Date().toLocaleDateString()}
-              </div>
+            <div
+              style={{
+                fontSize: "22px",
+                fontWeight: 700,
+                color: "#0a3d62",
+                marginBottom: "10px",
+                textAlign: "center",
+              }}
+            >
+              {title}
             </div>
 
-            {/* Grid de productos (2 cols x 3 filas) */}
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
-                gap: "18px",
-                marginTop: "8px",
+                gap: "20px",
                 flex: 1,
               }}
             >
@@ -257,53 +207,65 @@ export default function CatalogoPDFGenerator({
                 <div
                   key={i}
                   style={{
+                    padding: "14px",
+                    borderRadius: "12px",
+                    border: "1px solid #e2e2e2",
+                    background:
+                      "linear-gradient(145deg, #ffffff, #f6f8fa, #ffffff)",
+                    boxShadow:
+                      "4px 4px 12px rgba(0,0,0,0.08), -4px -4px 12px rgba(255,255,255,1)",
                     display: "flex",
-                    gap: "12px",
-                    padding: "10px",
-                    borderRadius: "10px",
-                    border: "1px solid #e6eef6",
-                    alignItems: "stretch",
-                    background: "#ffffff",
+                    gap: "14px",
                   }}
                 >
-                  <div style={{ width: "42%", height: "100px", borderRadius: 8, overflow: "hidden" }}>
-                    <img
-                      src={p?.imagen ? `${p.imagen.startsWith("http") ? p.imagen : p.imagen}` : "/placeholder.png"}
-                      alt={p?.nombre || ""}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                      crossOrigin="anonymous"
-                    />
-                  </div>
+                  <img
+                    src={p.imagen}
+                    style={{
+                      width: "42%",
+                      height: "120px",
+                      objectFit: "cover",
+                      borderRadius: "10px",
+                    }}
+                  />
 
-                  <div style={{ width: "58%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                    <div>
-                      <div style={{ fontSize: "14px", fontWeight: 700, color: "#0f172a" }}>
-                        {p?.nombre || "Sin nombre"}
-                      </div>
-                      <div style={{ fontSize: "11px", color: "#6b7280", marginTop: 6, minHeight: 36 }}>
-                        {p?.descripcion ? (p.descripcion.length > 120 ? p.descripcion.slice(0, 120) + "..." : p.descripcion) : "Sin descripción"}
-                      </div>
+                  <div style={{ width: "58%" }}>
+                    <div style={{ fontWeight: 700, fontSize: "15px" }}>
+                      {p.nombre}
                     </div>
 
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8 }}>
-                      <div style={{ fontSize: "13px", fontWeight: 800, color: "#0ea5a9" }}>
-                        {p?.precios && Array.isArray(p.precios) && p.precios[0] ? new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", minimumFractionDigits: 0 }).format(Number(p.precios[0].precio || 0)) : ""}
-                      </div>
-                      <div style={{ fontSize: "11px", color: "#6b7280" }}>{p?.marca || ""}</div>
+                    <div
+                      style={{
+                        fontSize: "11px",
+                        color: "#555",
+                        marginTop: "6px",
+                      }}
+                    >
+                      {p.descripcion}
+                    </div>
+
+                    <div
+                      style={{
+                        marginTop: "10px",
+                        fontWeight: 800,
+                        color: "#0089a7",
+                        fontSize: "15px",
+                      }}
+                    >
+                      {p?.precios?.[0]?.precio || ""}
                     </div>
                   </div>
                 </div>
               ))}
-
-              {/* Relleno si la página tiene menos items */}
-              {Array.from({ length: itemsPerPage - pageItems.length }).map((_, j) => (
-                <div key={"empty-" + j} style={{ visibility: "hidden" }} />
-              ))}
             </div>
 
-            {/* Footer con numeración */}
-            <div style={{ textAlign: "center", fontSize: "10px", color: "#9ca3af", marginTop: 8 }}>
-              Página {pageIndex + 1} / {pages.length}
+            <div
+              style={{
+                textAlign: "center",
+                fontSize: "11px",
+                color: "#999",
+              }}
+            >
+              Página {index + 1} / {pages.length}
             </div>
           </div>
         ))}
