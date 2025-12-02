@@ -1,7 +1,8 @@
 import os
 import json
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
@@ -9,27 +10,46 @@ from uuid import uuid4
 import aiofiles
 import asyncio
 
+# -----------------------------------
+# Crear la app PRIMERO
+# -----------------------------------
+app = FastAPI(title="Puerto Comercio - API", version="1.0")
+
+# -----------------------------------
+# IMPORTAR E INCLUIR ROUTERS
+# -----------------------------------
+from routes.catalogo import router as catalogo_router
+app.include_router(catalogo_router)
+
+# -----------------------------------
+# Paths y configuración inicial
+# -----------------------------------
 BASE_DIR = os.path.dirname(__file__)
 JSON_PATH = os.path.join(BASE_DIR, "products.json")
 UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-lock = asyncio.Lock()  # para evitar race conditions en el archivo JSON
+lock = asyncio.Lock()  # evita race conditions en el JSON
 
-app = FastAPI(title="Puerto Comercio - API", version="1.0")
+# -----------------------------------
+# Servir archivos estáticos (uploads)
+# -----------------------------------
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
-# CORS - permite que tu frontend en otro puerto se conecte
+# -----------------------------------
+# CORS
+# -----------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # en producción restringir
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# -----------------------
-# Models
-# -----------------------
+# -----------------------------------
+# MODELOS
+# -----------------------------------
 class Precio(BaseModel):
     cantidad: str
     precio: int
@@ -47,15 +67,15 @@ class ProductoIn(BaseModel):
 class Producto(ProductoIn):
     id: int
 
-# -----------------------
-# Helpers para JSON
-# -----------------------
+# -----------------------------------
+# Helpers JSON
+# -----------------------------------
 async def read_db():
     async with lock:
         if not os.path.exists(JSON_PATH):
-            # crear base vacía
             with open(JSON_PATH, "w", encoding="utf-8") as f:
                 json.dump({"nextId": 100, "productos": []}, f, ensure_ascii=False, indent=2)
+
         with open(JSON_PATH, "r", encoding="utf-8") as f:
             data = json.load(f)
     return data
@@ -65,9 +85,9 @@ async def write_db(data):
         with open(JSON_PATH, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
-# -----------------------
-# Rutas CRUD
-# -----------------------
+# -----------------------------------
+# CRUD PRODUCTOS
+# -----------------------------------
 @app.get("/productos")
 async def listar_productos():
     data = await read_db()
@@ -116,9 +136,9 @@ async def eliminar_producto(producto_id: int):
     await write_db(data)
     return {"ok": True}
 
-# -----------------------
+# -----------------------------------
 # Upload de imágenes
-# -----------------------
+# -----------------------------------
 @app.post("/upload-image")
 async def upload_image(file: UploadFile = File(...)):
     ext = os.path.splitext(file.filename)[1]
@@ -131,8 +151,6 @@ async def upload_image(file: UploadFile = File(...)):
 
     return {"ok": True, "ruta": fname}
 
-
-# Servir archivos subidos
 @app.get("/uploads/{filename}")
 async def serve_uploads(filename: str):
     path = os.path.join(UPLOAD_DIR, filename)
@@ -140,9 +158,9 @@ async def serve_uploads(filename: str):
         raise HTTPException(status_code=404, detail="Archivo no encontrado")
     return FileResponse(path)
 
-# -----------------------
-# Health
-# -----------------------
+# -----------------------------------
+# Healthcheck
+# -----------------------------------
 @app.get("/health")
 async def health():
     return {"ok": True, "msg": "api up"}

@@ -1,3 +1,4 @@
+// Catalogo.jsx
 import React, { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -15,6 +16,9 @@ import {
   X,
   Star,
 } from "lucide-react";
+
+// ** NUEVO - Import del generador de PDF (estilo premium glossy) **
+import CatalogoPDFGenerator from "./components/pdf/CatalogoPDFGenerator";
 
 /**
  * Catalogo.jsx
@@ -157,6 +161,21 @@ export default function Catalogo() {
     );
   };
 
+  // --- NEW: Preparo lista para PDF (imagen -> URL absoluta si corresponde) ---
+  const productsForPdf = useMemo(() => {
+    return (filtrados || []).map((p) => {
+      const imagenRaw = p?.imagen || "";
+      // Si ya es una URL absoluta, la usamos, si no la convertimos a la ruta del backend
+      const imagenUrl =
+        imagenRaw && (String(imagenRaw).startsWith("http") || String(imagenRaw).startsWith("data:"))
+          ? imagenRaw
+          : imagenRaw
+          ? `${API_URL.replace(/\/$/, "")}/uploads/${imagenRaw}`
+          : "";
+      return { ...p, imagen: imagenUrl };
+    });
+  }, [filtrados]);
+
   // --- Loading UI ---
   if (loading) {
     return (
@@ -192,6 +211,17 @@ export default function Catalogo() {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* =========================
+                Aquí agregué el botón PDF (premium glossy)
+                - CatalogoPDFGenerator incluye el botón y el contenido oculto para html2canvas
+               ========================= */}
+            <CatalogoPDFGenerator
+              products={productsForPdf}
+              logoUrl="/keenboosup.png"
+              title="PUERTO COMERCIO"
+              subtitle="Catálogo 2025 — Edición Premium"
+            />
+
             <button
               onClick={() => setDark((d) => !d)}
               className="p-3 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 dark:from-yellow-500 dark:to-orange-500 text-white shadow-lg hover:shadow-xl transition-all duration-300"
