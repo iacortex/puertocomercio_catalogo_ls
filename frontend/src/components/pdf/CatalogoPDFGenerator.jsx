@@ -16,21 +16,25 @@ async function drawPremiumCover(pdf, portadaUrl, title, subtitle) {
   pdf.context2d.fillRect(0, 0, pageWidth, pageHeight);
 
   // Imagen de portada centrada
-  try {
-    const img = await fetchImageAsDataURL(portadaUrl);
-    const imgWidth = pageWidth * 0.85;
-    const imgHeight = (imgWidth * 12) / 9;
-    const imgX = (pageWidth - imgWidth) / 2;
-    const imgY = 25;
+  if (portadaUrl) {
+    try {
+      const img = await fetchImageAsDataURL(portadaUrl);
+      const imgWidth = pageWidth * 0.85;
+      const imgHeight = (imgWidth * 12) / 9;
+      const imgX = (pageWidth - imgWidth) / 2;
+      const imgY = 25;
 
-    pdf.addImage(img, "PNG", imgX, imgY, imgWidth, imgHeight, "", "FAST");
-  } catch (err) {
-    console.log("Error cargando portada", err);
+      pdf.addImage(img, "PNG", imgX, imgY, imgWidth, imgHeight, "", "FAST");
+    } catch (err) {
+      console.log("Error cargando portada", err);
+    }
   }
 
   // Capa glass suave
-  pdf.setFillColor(255, 255, 255, 0.08);
+  pdf.setFillColor(255, 255, 255);
+  pdf.setGState(new pdf.GState({ opacity: 0.08 }));
   pdf.roundedRect(10, 10, pageWidth - 20, pageHeight - 20, 10, 10, "F");
+  pdf.setGState(new pdf.GState({ opacity: 1 }));
 
   // TÍTULO grande con sombra
   pdf.setFont("helvetica", "bold");
@@ -57,13 +61,29 @@ async function drawPremiumCover(pdf, portadaUrl, title, subtitle) {
 }
 
 async function fetchImageAsDataURL(url) {
-  const res = await fetch(url, { mode: "cors" });
-  const blob = await res.blob();
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.readAsDataURL(blob);
-  });
+  try {
+    // Crear un proxy para evitar problemas de CORS
+    const proxyUrl = url.startsWith('http') ? url : window.location.origin + url;
+    
+    const res = await fetch(proxyUrl, { 
+      mode: "cors",
+      cache: "no-cache"
+    });
+    
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    
+    const blob = await res.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (err) {
+    console.error("Error fetching image:", err);
+    // Retornar imagen placeholder en base64
+    return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
+  }
 }
 
 async function ensureImagesLoaded(node) {
@@ -74,6 +94,8 @@ async function ensureImagesLoaded(node) {
         new Promise((resolve) => {
           if (img.complete) return resolve();
           img.onload = img.onerror = () => resolve();
+          // Timeout de seguridad
+          setTimeout(resolve, 3000);
         })
     )
   );
@@ -81,7 +103,7 @@ async function ensureImagesLoaded(node) {
 
 export default function CatalogoPDFGenerator({
   products = [],
-  portadaUrl = "http://72.61.56.128:8000/uploads/catalogo_portada.png",
+  portadaUrl = "/keenboosup.png",
   title = "PUERTO COMERCIO",
   subtitle = "Catálogo Premium — Edición 2025",
 }) {
@@ -98,64 +120,79 @@ export default function CatalogoPDFGenerator({
   }, [products]);
 
   async function generatePDF() {
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
+    try {
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
 
-    // ⭐ 1. PORTADA PREMIUM
-    await drawPremiumCover(pdf, portadaUrl, title, subtitle);
+      // ⭐ 1. PORTADA PREMIUM
+      await drawPremiumCover(pdf, portadaUrl, title, subtitle);
 
-    pdf.addPage();
+      pdf.addPage();
 
-    // ⭐ ÍNDICE
-    pdf.setFontSize(22);
-    pdf.setTextColor("#333");
-    pdf.text("Índice", 15, 20);
+      // ⭐ 2. ÍNDICE
+      pdf.setFontSize(22);
+      pdf.setTextColor("#333");
+      pdf.text("Índice", 15, 20);
 
-    const categories = {};
-    products.forEach((p) => {
-      const cat = p.categoria || "Otros";
-      categories[cat] = (categories[cat] || 0) + 1;
-    });
-
-    let y = 40;
-    pdf.setFontSize(13);
-    pdf.setTextColor("#444");
-
-    Object.keys(categories).forEach((c) => {
-      pdf.text(`• ${c} (${categories[c]})`, 20, y);
-      y += 8;
-    });
-
-    pdf.addPage();
-
-    // ⭐ 3. PÁGINAS DE PRODUCTOS (HTML → PDF)
-    const hidden = hiddenRef.current;
-    hidden.style.display = "block";
-    hidden.style.position = "fixed";
-    hidden.style.left = "-2000px";
-
-    const nodes = hidden.children;
-
-    for (let i = 0; i < nodes.length; i++) {
-      const node = nodes[i];
-
-      await ensureImagesLoaded(node);
-
-      const canvas = await html2canvas(node, {
-        scale: 2,
-        useCORS: true,
+      const categories = {};
+      products.forEach((p) => {
+        const cat = p.categoria || "Otros";
+        categories[cat] = (categories[cat] || 0) + 1;
       });
 
-      const img = canvas.toDataURL("image/png");
-      pdf.addImage(img, "PNG", 0, 0, pageWidth, pageHeight);
+      let y = 40;
+      pdf.setFontSize(13);
+      pdf.setTextColor("#444");
 
-      if (i < nodes.length - 1) pdf.addPage();
+      Object.keys(categories).forEach((c) => {
+        pdf.text(`• ${c} (${categories[c]})`, 20, y);
+        y += 8;
+      });
+
+      pdf.addPage();
+
+      // ⭐ 3. PÁGINAS DE PRODUCTOS (HTML → PDF)
+      const hidden = hiddenRef.current;
+      if (!hidden) {
+        throw new Error("Elemento oculto no encontrado");
+      }
+
+      hidden.style.display = "block";
+      hidden.style.position = "fixed";
+      hidden.style.left = "-9999px";
+      hidden.style.top = "0";
+
+      const nodes = hidden.children;
+
+      for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i];
+
+        // Esperar a que las imágenes carguen
+        await ensureImagesLoaded(node);
+
+        const canvas = await html2canvas(node, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: "#ffffff",
+          logging: false,
+          imageTimeout: 15000,
+        });
+
+        const img = canvas.toDataURL("image/png");
+        pdf.addImage(img, "PNG", 0, 0, pageWidth, pageHeight);
+
+        if (i < nodes.length - 1) pdf.addPage();
+      }
+
+      hidden.style.display = "none";
+
+      pdf.save("catalogo_puerto_comercio_premium.pdf");
+    } catch (err) {
+      console.error("Error generando PDF:", err);
+      alert("Error al generar el PDF. Por favor intenta nuevamente.");
     }
-
-    hidden.style.display = "none";
-
-    pdf.save("catalogo_puerto_comercio_premium.pdf");
   }
 
   return (
@@ -219,12 +256,16 @@ export default function CatalogoPDFGenerator({
                   }}
                 >
                   <img
-                    src={p.imagen}
+                    src={p.imagen || "https://placehold.co/300x300?text=Producto"}
+                    crossOrigin="anonymous"
                     style={{
                       width: "42%",
                       height: "120px",
                       objectFit: "cover",
                       borderRadius: "10px",
+                    }}
+                    onError={(e) => {
+                      e.target.src = "https://placehold.co/300x300?text=Producto";
                     }}
                   />
 

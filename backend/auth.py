@@ -6,14 +6,14 @@ from passlib.context import CryptContext
 
 from schemas import UserInDB, User
 
-SECRET_KEY = "PUERTO_COMERCIO_SUPER_SECRETO"   # cámbialo por seguridad
+SECRET_KEY = "PUERTO_COMERCIO_SUPER_SECRETO"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 1 día
 
 fake_user_db = {
     "admin": {
         "username": "admin",
-        "hashed_password": "$2b$12$5S45oXxjAJv/w1R9n56kOOfT7z59WlCgG7lDpJYhKDPutYXEBaeZC"  # contraseña: admin123
+        "hashed_password": "$2b$12$5S45oXxjAJv/w1R9n56kOOfT7z59WlCgG7lDpJYhKDPutYXEBaeZC"  # admin123
     }
 }
 

@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 
 // ** NUEVO - Import del generador de PDF (estilo premium glossy) **
-import CatalogoPDFGenerator from "./components/pdf/CatalogoPDFGenerator";
+import CatalogoPDFGenerator from "../components/pdf/CatalogoPDFGenerator";
 
 /**
  * Catalogo.jsx
